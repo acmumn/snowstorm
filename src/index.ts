@@ -1,10 +1,10 @@
 import "dotenv/config";
 import express from "express";
-import { authenticated, DiscordUser, getUser } from "./auth";
-import { DatabaseUser, db } from "./db";
-import { COOKIE_SECRET, DISCORD_OAUTH_URL, IS_PROD, PORT, STATIC_DIR } from "./constants";
+import { authenticated, DiscordUser, getUser } from "./auth.js";
+import { DatabaseUser, db } from "./db.js";
+import { COOKIE_SECRET, DISCORD_OAUTH_URL, IS_PROD, PORT, STATIC_DIR } from "./constants.js";
 import session from "express-session";
-import { SessionStore } from "./session-store";
+import { SessionStore } from "./session-store.js";
 import markdownit from 'markdown-it'
 const md = markdownit()
 

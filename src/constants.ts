@@ -1,8 +1,6 @@
 import path, { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-
-    // @ts-expect-error
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
 

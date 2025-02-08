@@ -1,5 +1,5 @@
 import { EventEmitter } from "node:events";
-import { db } from "./db";
+import { db } from "./db.js";
 import session, { SessionData, Store } from "express-session";
 
 type SessionT = session.Session & Partial<session.SessionData>;

@@ -3,7 +3,7 @@ import {
   DISCORD_CLIENT_SECRET,
   PORT,
   HOST,
-} from "./constants";
+} from "./constants.js";
 
 const getOauthData = (code: string) =>
   fetch("https://discord.com/api/oauth2/token", {

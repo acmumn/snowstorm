@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { DB_FILE } from "./constants";
+import { DB_FILE } from "./constants.js";
 
 export const db = new Database(DB_FILE);
 db.pragma("foreign_keys = ON");
