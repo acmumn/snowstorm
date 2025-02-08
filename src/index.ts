@@ -324,7 +324,7 @@ app.post("/submission/:id", (req, res) => {
     const submission = db.prepare("select * from submissions where id = ?").get(id);
     // @ts-expect-error
     const user = db.prepare("select * from users where id = ?").get(submission.user_id) as DatabaseUser;
-    if(typeof req.body.code !== 'string' || req.body.code.length > 1000) {
+    if(typeof req.body.code !== 'string' || req.body.code.length > 10_000) {
         render(req, res.status(400), "error", {
             error: {
                 message: "Invalid code.",
