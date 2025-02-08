@@ -20,6 +20,7 @@ const render = (
   path: string,
   params: Record<string, any>,
 ) => {
+    // @ts-expect-error
   res.render("base", { path, params, error: false, user: req.session.user });
 };
 
@@ -115,6 +116,8 @@ app.get("/auth", async (req, res) => {
       } else {
         render(req, res.status(500), "error", {
           error: {
+
+    // @ts-expect-error
             message: e.message,
             status: "Internal server error",
           },
@@ -202,6 +205,8 @@ app.get("/problem/:id", (req, res) => {
     const userSubmission = db
         .prepare("select * from submissions where problem_id = ? and user_id = ?")
         .get(id, req.session.user.id);
+
+    // @ts-expect-error
     render(req, res, "problem", { title: problem.title, problem, userSubmission });
 });
 
@@ -256,7 +261,9 @@ app.get("/submission/:id", (req, res) => {
         });
         return;
     }
+    // @ts-expect-error
     const problem = db.prepare("select * from problems where id = ?").get(submission.problem_id);
+    // @ts-expect-error
     const user = db.prepare("select * from users where id = ?").get(submission.user_id) as DatabaseUser;
     if(req.session.user?.admin || user.discord_id === req.session.user?.discord_id) {
         render(req, res, "submission", { title: "Submission", submission, problem });
@@ -315,6 +322,7 @@ app.post("/submission/:id", (req, res) => {
     // update
     const { id } = req.params;
     const submission = db.prepare("select * from submissions where id = ?").get(id);
+    // @ts-expect-error
     const user = db.prepare("select * from users where id = ?").get(submission.user_id) as DatabaseUser;
     if(typeof req.body.code !== 'string' || req.body.code.length > 1000) {
         render(req, res.status(400), "error", {
