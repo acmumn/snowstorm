@@ -28,10 +28,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(STATIC_DIR));
 app.set("view engine", "ejs");
+app.set("trust proxy", "loopback, 128.101.131.236")
 app.use(
     session({
       secret: COOKIE_SECRET,
       resave: false,
+      proxy: true,
       cookie: {
         secure: IS_PROD,
       },
