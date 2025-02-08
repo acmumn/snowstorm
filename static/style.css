@@ -1,0 +1,122 @@
+:root {
+    --accent: #edca5a;
+    --bg: #fff;
+    --bg-1: #f5f5f5;
+    --fg: #252525;
+    --fg-1: #555;
+    --error: #e00;
+    --link: #4287f5;
+
+    --button-bg: #38423A;
+    --button-bg-hover: #2b2f2c;
+    --button-bg-active: #1f211f;
+    --button-fg: var(--bg);
+}
+
+body {
+    font-family: 'Fira Sans', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 2rem;
+    background-color: var(--bg);
+    color: var(--fg);
+}
+
+.grow-wrap {
+    /* easy way to plop the elements on top of each other and have them both sized based on the tallest one's height */
+    display: grid;
+  }
+  .grow-wrap::after {
+    /* Note the weird space! Needed to preventy jumpy behavior */
+    content: attr(data-replicated-value) " ";
+  
+    /* This is how textarea text behaves */
+    white-space: pre-wrap;
+  
+    /* Hidden from view, clicks, and screen readers */
+    visibility: hidden;
+  }
+  .grow-wrap > textarea {
+    /* You could leave this, but after a user resizes, then it ruins the auto sizing */
+    resize: none;
+  
+    /* Firefox shows scrollbar on growth, you can hide like this. */
+    overflow: hidden;
+  }
+  .grow-wrap > textarea,
+  .grow-wrap::after {
+    /* Identical styling required!! */
+    border: 1px solid black;
+    padding: 0.5rem;
+    font: inherit;
+  
+    /* Place on top of each other */
+    grid-area: 1 / 1 / 2 / 2;
+  }
+  
+  label {
+    display: block;
+  }
+
+textarea {
+    font-family: 'Fira Code', monospace;
+}
+  
+.inline-user {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin: 0 0.25rem;
+    vertical-align: bottom;
+  }
+  .inline-user img {
+    aspect-ratio: 1;
+    height: 1.5rem;
+    border-radius: 100%;
+    margin-right: 0.25rem;
+  }
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h1 a {
+        text-decoration: none;
+        color: var(--fg);
+    }
+    h1 {
+        margin: 0;
+    }
+}
+
+a {
+    color: var(--link);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+table {
+    margin: 1rem 0;
+}
+
+table, td, tr, th {
+    border: 1px solid var(--fg-1);
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 0.5rem;
+
+    input[type="submit"] {
+        margin: 0;
+    }
+}
+
+tr:nth-child(even) {
+    background-color: var(--bg-1);
+}

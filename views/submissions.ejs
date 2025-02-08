@@ -1,0 +1,15 @@
+<main>
+    <h1>Submissions for <%= problem.title %></h1>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Submission</th>
+        </tr>
+        <% submissions.forEach(submission => { %>
+            <tr>
+                <td><%= submission.user %></td>
+                <td><a href="/submission/<%= submission.id %>">View</a></td>
+            </tr>
+        <% }) %>
+    </table>
+</main>

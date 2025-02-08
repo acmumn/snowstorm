@@ -1,0 +1,15 @@
+<main>
+    <h1><%= problem.title %></h1>
+    <%- problem.description %>
+    <% if (user.admin) { %>
+        <a href="/problem/<%= problem.id %>/edit">Edit problem</a>
+    <% } %>
+    <% if (user.admin) { %>
+        <a href="/problem/<%= problem.id %>/submissions">View submissions</a>
+    <% } %>
+    <% if (userSubmission) { %>
+        <a href="/submission/<%= userSubmission.id %>">View your submission</a>
+    <% } else { %>
+        <a href="/problem/<%= problem.id %>/submit">Make a submission</a>
+    <% } %>
+</main>

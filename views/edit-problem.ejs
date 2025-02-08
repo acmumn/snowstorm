@@ -1,0 +1,11 @@
+<main>
+    <h1>Edit <%= problem.title %></h1>
+    <form action="/edit/<%= problem.id %>" method="post">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="<%= problem.title %>">
+        <label for="description">Description</label>
+        <textarea name="description" id="description"><%= problem.description %></textarea>
+        <button type="submit">Edit</button>
+    </form>
+    <a href="/problems/<%= problem.id %>">Return to the problem page</a>
+</main>

@@ -1,0 +1,21 @@
+<main>
+    Welcome to Snowstorm of Code!
+
+    <h2>Problems</h2>
+    <% if (user?.admin) { %>
+        <a href="/problem/new">Create a new problem</a>
+    <% } %>
+    <table>
+        <tr>
+            <th>Problem</th>
+            <th>Submissions</th>
+        </tr>
+        <% problems.forEach(problem => { %>
+            <tr>
+                <td><a href="/problem/<%= problem.id %>"><%= problem.title %></a></td>
+                <td><%= problem.submissions %></td>
+            </tr>
+        <% }) %>
+    </table>
+
+</main>
