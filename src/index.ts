@@ -293,7 +293,8 @@ app.get("/problem/:id/submissions", (req, res) => {
     }
     const { id } = req.params;
     const problem = db.prepare("select * from problems where id = ?").get(id);
-    const submissions = db.prepare("select *, users.username as user from submissions inner join users on users.id = submissions.user_id where problem_id = ?").all(id);
+    // @ts-expect-error
+    const submissions = db.prepare("select *, users.username as user from submissions inner join users on users.id = submissions.user_id where problem_id = ?").all(id).filter(s => s.problem_id === id);
     render(req, res, "submissions", { title: "Submissions", problem, submissions });
 });
 
