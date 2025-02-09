@@ -1,6 +1,6 @@
 <main>
     <h1>Edit <%= problem.title %></h1>
-    <form action="/edit/<%= problem.id %>" method="post">
+    <form action="/problem/<%= problem.id %>/edit" method="post">
         <label for="name">Name</label>
         <input type="text" name="name" id="name" value="<%= problem.title %>">
         <label for="description">Description</label>
