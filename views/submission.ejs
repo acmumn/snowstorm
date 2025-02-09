@@ -3,7 +3,7 @@
     <form action="/submission/<%= submission.id %>" method="post">
         <label for="code">Code</label>
         <div class="grow-wrap">
-            <textarea name="code" id="code" onInput="this.parentNode.dataset.replicatedValue = this.value"><%= submission.code %></textarea>
+            <textarea name="code" id="code" oninput="this.parentNode.dataset.replicatedValue = this.value"><%= submission.code %></textarea>
           </div>
         <button type="submit">Submit</button>
     </form>

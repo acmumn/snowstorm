@@ -277,27 +277,6 @@ app.get("/submission/:id", (req, res) => {
     }
 });
 
-app.post("/submission", (req, res) => {
-    if(!req.session.user) {
-        res.redirect("/login");
-        return;
-    }
-    // create
-    const { problem_id, code } = req.body;
-    const problem = db.prepare("select * from problems where id = ?").get(problem_id);
-    if(!problem) {
-        render(req, res.status(404), "error", {
-            error: {
-                message: "Problem not found.",
-                status: "Not Found",
-            },
-        });
-        return;
-    }
-    db.prepare("insert into submissions (user_id, problem_id, code) values (?, ?, ?)").run(req.session.user.id, problem_id, code);
-    res.redirect(`/problem/${problem_id}`);
-});
-
 app.get("/problem/:id/submissions", (req, res) => {
     if(!req.session.user) {
         res.redirect("/login");

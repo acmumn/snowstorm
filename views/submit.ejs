@@ -4,7 +4,7 @@
     <form action="/problem/<%= problem.id %>/submit" method="post">
         <label for="code">Code</label>
         <div class="grow-wrap">
-            <textarea name="code" id="code" onInput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+            <textarea name="code" id="code" oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
           </div>
         <button type="submit">Submit</button>
     </form>
