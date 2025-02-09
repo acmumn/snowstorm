@@ -313,7 +313,7 @@ app.post("/submission/:id", (req, res) => {
         return;
     }
     if(user.discord_id === req.session.user?.discord_id) {
-        db.prepare("update submissions set code = ? where id = ?").run(req.body.code);
+        db.prepare("update submissions set code = ? where id = ?").run(req.body.code, id);
         res.redirect(`/submission/${id}`);
     } else {
         render(req, res.status(403), "error", {
