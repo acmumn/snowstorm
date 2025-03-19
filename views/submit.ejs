@@ -2,10 +2,15 @@
     <h1>Submit to <%= problem.title %></h1>
     <p>You can use any language found on <a href="https://riju.codes/">riju.codes</a>. Please note which language you used in your submission.</p>
     <form action="/problem/<%= problem.id %>/submit" method="post">
+        <label for="lang">Language</label>
+        <input type="text" name="lang" id="lang">
         <label for="code">Code</label>
         <div class="grow-wrap">
             <textarea name="code" id="code" onload="this.parentNode.dataset.replicatedValue = this.value" oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
           </div>
+        <label for="other">Other information</label>
+        <p>This can be used to tell us how to run your code, or any other information you consider pertinent to your submission.</p>
+        <input type="text" name="other" id="other"><br/>
         <button type="submit">Submit</button>
     </form>
 </main>

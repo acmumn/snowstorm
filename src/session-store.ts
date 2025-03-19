@@ -29,7 +29,7 @@ export class SessionStore extends Store {
         .all() as DatabaseSession[];
       callback(null, sessions.map(this.normalize));
     } catch (e) {
-        // @ts-expect-error
+      // @ts-expect-error
       callback(e, null);
     }
   }
@@ -49,7 +49,7 @@ export class SessionStore extends Store {
       ).run(sid, sess, user_id);
       callback(null);
     } catch (e) {
-        // @ts-expect-error
+      // @ts-expect-error
       callback(e);
     }
   }
@@ -66,7 +66,7 @@ export class SessionStore extends Store {
         .get(sid) as DatabaseSession;
       callback(null, session ? this.normalize(session) : null);
     } catch (e) {
-        // @ts-expect-error
+      // @ts-expect-error
       callback(e, null);
     }
   }
@@ -76,7 +76,7 @@ export class SessionStore extends Store {
       db.prepare("delete from sessions where sid = ?").run(sid);
       callback(null);
     } catch (e) {
-        // @ts-expect-error
+      // @ts-expect-error
       callback(e);
     }
   }
@@ -86,7 +86,7 @@ export class SessionStore extends Store {
       const count = db.prepare("select count(*) from sessions").pluck().get();
       callback(null);
     } catch (e) {
-        // @ts-expect-error
+      // @ts-expect-error
       callback(e);
     }
   }
@@ -96,7 +96,7 @@ export class SessionStore extends Store {
       db.prepare("delete from sessions").run();
       callback(null);
     } catch (e) {
-        // @ts-expect-error
+      // @ts-expect-error
       callback(e);
     }
   }

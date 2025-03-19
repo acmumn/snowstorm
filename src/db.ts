@@ -16,15 +16,15 @@ export interface DatabaseUser {
 }
 
 export interface DatabaseProblem {
-    id: number;
-    title: string;
-    description: string;
+  id: number;
+  title: string;
+  description: string;
 }
 
 export interface DatabaseSubmission {
-    id: number;
-    user_id: number;
-    problem_id: number;
-    code: string;
-    created_at: string;
+  id: number;
+  user_id: number;
+  problem_id: number;
+  code: string;
+  created_at: string;
 }

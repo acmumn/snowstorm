@@ -32,10 +32,7 @@ export const DISCORD_OAUTH_URL = demand(
   "DISCORD_OAUTH_URL",
   process.env.DISCORD_OAUTH_URL,
 );
-export const COOKIE_SECRET = demand(
-    "COOKIE_SECRET",
-    process.env.COOKIE_SECRET,
-);
+export const COOKIE_SECRET = demand("COOKIE_SECRET", process.env.COOKIE_SECRET);
 
 export const NODE_ENV = process.env.NODE_ENV || "development";
 export const IS_PROD = NODE_ENV === "production";

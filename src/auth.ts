@@ -63,7 +63,6 @@ export const authenticated = (
   next: () => void,
 ) => {
   if (!req.session.user) {
-
     // @ts-expect-error
     res.redirect("/login");
   } else {

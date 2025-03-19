@@ -1,10 +1,22 @@
 <main>
     <h1>Submission to <%= problem.title %></h1>
     <form action="/submission/<%= submission.id %>" method="post">
+        <label for="lang">Language</label>
+        <input type="text" name="lang" id="lang" value="<%= submission.lang %>">
         <label for="code">Code</label>
         <div class="grow-wrap">
-            <textarea name="code" id="code" onload="this.parentNode.dataset.replicatedValue = this.value" oninput="this.parentNode.dataset.replicatedValue = this.value"><%= submission.code %></textarea>
-          </div>
+            <textarea name="code" id="code" oninput="this.parentNode.dataset.replicatedValue = this.value"><%= submission.code %></textarea>
+        </div>
+        <label for="other">Other information</label>
+        <p>This can be used to tell us how to run your code, or any other information you consider pertinent to your submission.</p>
+        <input type="text" name="other" id="other" value="<%= submission.other %>">
         <button type="submit">Submit</button>
     </form>
 </main>
+
+<script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        const textarea = document.querySelector('textarea');
+        textarea.parentNode.dataset.replicatedValue = textarea.value;
+    });
+</script>

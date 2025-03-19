@@ -2,11 +2,17 @@ import "dotenv/config";
 import express from "express";
 import { authenticated, DiscordUser, getUser } from "./auth.js";
 import { DatabaseUser, db } from "./db.js";
-import { COOKIE_SECRET, DISCORD_OAUTH_URL, IS_PROD, PORT, STATIC_DIR } from "./constants.js";
+import {
+  COOKIE_SECRET,
+  DISCORD_OAUTH_URL,
+  IS_PROD,
+  PORT,
+  STATIC_DIR,
+} from "./constants.js";
 import session from "express-session";
 import { SessionStore } from "./session-store.js";
-import markdownit from 'markdown-it'
-const md = markdownit()
+import markdownit from "markdown-it";
+const md = markdownit();
 
 declare module "express-session" {
   interface SessionData {
@@ -20,7 +26,7 @@ const render = (
   path: string,
   params: Record<string, any>,
 ) => {
-    // @ts-expect-error
+  // @ts-expect-error
   res.render("base", { path, params, error: false, user: req.session.user });
 };
 
@@ -29,18 +35,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(STATIC_DIR));
 app.set("view engine", "ejs");
-app.set("trust proxy", "loopback, 128.101.131.236")
+app.set("trust proxy", "loopback, 128.101.131.236");
 app.use(
-    session({
-      secret: COOKIE_SECRET,
-      resave: false,
-      proxy: true,
-      cookie: {
-        secure: IS_PROD,
-      },
-      store: new SessionStore(),
-    }),
-  );
+  session({
+    secret: COOKIE_SECRET,
+    resave: false,
+    proxy: true,
+    cookie: {
+      secure: IS_PROD,
+    },
+    store: new SessionStore(),
+  }),
+);
 
 app.get("/auth", async (req, res) => {
   const { code } = req.query;
@@ -105,7 +111,7 @@ app.get("/auth", async (req, res) => {
       req.session.user = dbUser;
       res.redirect("/");
     } catch (e) {
-        console.error(e);
+      console.error(e);
       if (IS_PROD) {
         render(req, res.status(500), "error", {
           error: {
@@ -116,8 +122,7 @@ app.get("/auth", async (req, res) => {
       } else {
         render(req, res.status(500), "error", {
           error: {
-
-    // @ts-expect-error
+            // @ts-expect-error
             message: e.message,
             status: "Internal server error",
           },
@@ -145,7 +150,9 @@ app.get("/login", (_, res) => {
 });
 
 app.get("/", (req, res) => {
-  const problems = db.prepare(`
+  const problems = db
+    .prepare(
+      `
         SELECT 
         p.id,
         p.*,
@@ -154,227 +161,315 @@ app.get("/", (req, res) => {
     LEFT JOIN submissions s ON p.id = s.problem_id
     GROUP BY p.id;
 
-    `).all();
+    `,
+    )
+    .all();
   render(req, res, "home", { title: "Home", problems });
 });
 
 app.get("/problem/new", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/login");
-        return;
-    }
-    if(!req.session.user.admin) {
-        render(req, res.status(403), "error", {
-            error: {
-                message: "You do not have permission to create a new problem.",
-                status: "Forbidden",
-            },
-        });
-        return;
-    }
-    render(req, res, "make-problem", { title: "New Problem" });
+  if (!req.session.user) {
+    res.redirect("/login");
+    return;
+  }
+  if (!req.session.user.admin) {
+    render(req, res.status(403), "error", {
+      error: {
+        message: "You do not have permission to create a new problem.",
+        status: "Forbidden",
+      },
+    });
+    return;
+  }
+  render(req, res, "make-problem", { title: "New Problem" });
 });
 
 app.post("/problem/new", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/login");
-        return;
-    }
-    if(!req.session.user.admin) {
-        render(req, res.status(403), "error", {
-            error: {
-                message: "You do not have permission to create a new problem.",
-                status: "Forbidden",
-            },
-        });
-        return;
-    }
-    const { title, description } = req.body;
-    console.log(req.body);
-    db.prepare("insert into problems (title, description) values (?, ?)").run(title, md.render(description));
-    res.redirect("/");
+  if (!req.session.user) {
+    res.redirect("/login");
+    return;
+  }
+  if (!req.session.user.admin) {
+    render(req, res.status(403), "error", {
+      error: {
+        message: "You do not have permission to create a new problem.",
+        status: "Forbidden",
+      },
+    });
+    return;
+  }
+  const { title, description } = req.body;
+  console.log(req.body);
+  db.prepare(
+    "insert into problems (title, description_raw, description_rendered) values (?, ?, ?)",
+  ).run(title, description, md.render(description));
+  res.redirect("/");
 });
 
 app.get("/problem/:id", (req, res) => {
-    if(!req.session.user) {
-        res.redirect("/login");
-        return;
-    }
-    const { id } = req.params;
-    const problem = db.prepare("select * from problems where id = ?").get(id);
-    const userSubmission = db
-        .prepare("select * from submissions where problem_id = ? and user_id = ?")
-        .get(id, req.session.user.id);
+  if (!req.session.user) {
+    res.redirect("/login");
+    return;
+  }
+  const { id } = req.params;
+  const problem = db.prepare("select * from problems where id = ?").get(id);
+  const userSubmission = db
+    .prepare("select * from submissions where problem_id = ? and user_id = ?")
+    .get(id, req.session.user.id);
 
-    // @ts-expect-error
-    render(req, res, "problem", { title: problem.title, problem, userSubmission });
+  // @ts-expect-error
+  render(req, res, "problem", {
+    title: problem.title,
+    problem,
+    userSubmission,
+  });
 });
 
 app.get("/problem/:id/edit", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/login");
-        return;
-    }
-    if(!req.session.user.admin) {
-        render(req, res.status(403), "error", {
-            error: {
-                message: "You do not have permission to edit this problem.",
-                status: "Forbidden",
-            },
-        });
-        return;
-    }
-    const { id } = req.params;
-    const problem = db.prepare("select * from problems where id = ?").get(id);
-    render(req, res, "edit-problem", { title: "Edit Problem", problem });
+  if (!req.session.user) {
+    res.redirect("/login");
+    return;
+  }
+  if (!req.session.user.admin) {
+    render(req, res.status(403), "error", {
+      error: {
+        message: "You do not have permission to edit this problem.",
+        status: "Forbidden",
+      },
+    });
+    return;
+  }
+  const { id } = req.params;
+  const problem = db.prepare("select * from problems where id = ?").get(id);
+  render(req, res, "edit-problem", { title: "Edit Problem", problem });
 });
 
 app.post("/problem/:id/edit", (req, res) => {
-    if (!req.session.user) {
-        res.redirect("/login");
-        return;
-    }
-    if(!req.session.user.admin) {
-        render(req, res.status(403), "error", {
-            error: {
-                message: "You do not have permission to edit this problem.",
-                status: "Forbidden",
-            },
-        });
-        return;
-    }
-    const { id } = req.params;
-    const { title, description } = req.body;
-    db.prepare("update problems set title = ?, description = ? where id = ?").run(title, md.render(description), id);
-    res.redirect(`/problem/${id}`);
+  if (!req.session.user) {
+    res.redirect("/login");
+    return;
+  }
+  if (!req.session.user.admin) {
+    render(req, res.status(403), "error", {
+      error: {
+        message: "You do not have permission to edit this problem.",
+        status: "Forbidden",
+      },
+    });
+    return;
+  }
+  const { id } = req.params;
+  const { title, description } = req.body;
+  db.prepare(
+    "update problems set title = ?, description_raw = ?, description_rendered = ? where id = ?",
+  ).run(title, description, md.render(description), id);
+  res.redirect(`/problem/${id}`);
 });
 
 app.get("/submission/:id", (req, res) => {
-    const { id } = req.params;
-    const submission = db.prepare("select * from submissions where id = ?").get(id);
-    if(!submission) {
-        render(req, res.status(404), "error", {
-            error: {
-                message: "Submission not found.",
-                status: "Not Found",
-            },
-        });
-        return;
-    }
-    // @ts-expect-error
-    const problem = db.prepare("select * from problems where id = ?").get(submission.problem_id);
-    // @ts-expect-error
-    const user = db.prepare("select * from users where id = ?").get(submission.user_id) as DatabaseUser;
-    if(req.session.user?.admin || user.discord_id === req.session.user?.discord_id) {
-        render(req, res, "submission", { title: "Submission", submission, problem });
-    } else {
-        render(req, res.status(403), "error", {
-            error: {
-                message: "You do not have permission to view this submission.",
-                status: "Forbidden",
-            },
-        });
-    }
+  const { id } = req.params;
+  const submission = db
+    .prepare("select * from submissions where id = ?")
+    .get(id);
+  if (!submission) {
+    render(req, res.status(404), "error", {
+      error: {
+        message: "Submission not found.",
+        status: "Not Found",
+      },
+    });
+    return;
+  }
+  // @ts-expect-error
+  const problem = db
+    .prepare("select * from problems where id = ?")
+    .get(submission.problem_id);
+  // @ts-expect-error
+  const user = db
+    .prepare("select * from users where id = ?")
+    .get(submission.user_id) as DatabaseUser;
+  if (
+    req.session.user?.admin ||
+    user.discord_id === req.session.user?.discord_id
+  ) {
+    render(req, res, "submission", {
+      title: "Submission",
+      submission,
+      problem,
+    });
+  } else {
+    render(req, res.status(403), "error", {
+      error: {
+        message: "You do not have permission to view this submission.",
+        status: "Forbidden",
+      },
+    });
+  }
 });
 
 app.get("/problem/:id/submissions", (req, res) => {
-    if(!req.session.user) {
-        res.redirect("/login");
-        return;
-    }
-    if(!req.session.user.admin) {
-        render(req, res.status(403), "error", {
-            error: {
-                message: "You do not have permission to view submissions.",
-                status: "Forbidden",
-            },
-        });
-        return;
-    }
-    const { id } = req.params;
-    const problem = db.prepare("select * from problems where id = ?").get(id);
-    const submissions = db.prepare("select submissions.*, users.username as user from submissions inner join users on users.id = submissions.user_id where problem_id = ?").all(id);
-    render(req, res, "submissions", { title: "Submissions", problem, submissions });
+  if (!req.session.user) {
+    res.redirect("/login");
+    return;
+  }
+  if (!req.session.user.admin) {
+    render(req, res.status(403), "error", {
+      error: {
+        message: "You do not have permission to view submissions.",
+        status: "Forbidden",
+      },
+    });
+    return;
+  }
+  const { id } = req.params;
+  const problem = db.prepare("select * from problems where id = ?").get(id);
+  const submissions = db
+    .prepare(
+      "select submissions.*, users.username as user from submissions inner join users on users.id = submissions.user_id where problem_id = ?",
+    )
+    .all(id);
+  render(req, res, "submissions", {
+    title: "Submissions",
+    problem,
+    submissions,
+  });
 });
 
 app.post("/submission/:id", (req, res) => {
-    // update
-    const { id } = req.params;
-    const submission = db.prepare("select * from submissions where id = ?").get(id);
-    // @ts-expect-error
-    const user = db.prepare("select * from users where id = ?").get(submission.user_id) as DatabaseUser;
-    if(typeof req.body.code !== 'string' || req.body.code.length > 10_000) {
-        render(req, res.status(400), "error", {
-            error: {
-                message: "Invalid code.",
-                status: "Bad Request",
-            },
-        });
-        return;
+  // update
+  const { id } = req.params;
+  const submission = db
+    .prepare("select * from submissions where id = ?")
+    .get(id);
+  // @ts-expect-error
+  const user = db
+    .prepare("select * from users where id = ?")
+    .get(submission.user_id) as DatabaseUser;
+  if (typeof req.body.code !== "string" || req.body.code.length > 10_000) {
+    render(req, res.status(400), "error", {
+      error: {
+        message: "Invalid code.",
+        status: "Bad Request",
+      },
+    });
+    return;
+  }
+  if (user.discord_id === req.session.user?.discord_id) {
+    if (typeof req.body.code !== "string" || req.body.code.length > 1000) {
+      render(req, res.status(400), "error", {
+        error: {
+          message: "Invalid code.",
+          status: "Bad Request",
+        },
+      });
+      return;
     }
-    if(user.discord_id === req.session.user?.discord_id) {
-        db.prepare("update submissions set code = ? where id = ?").run(req.body.code, id);
-        res.redirect(`/submission/${id}`);
-    } else {
-        render(req, res.status(403), "error", {
-            error: {
-                message: "You do not have permission to view this submission.",
-                status: "Forbidden",
-            },
-        });
+    if (typeof req.body.lang !== "string" || req.body.lang.length > 100) {
+      render(req, res.status(400), "error", {
+        error: {
+          message: "Invalid language.",
+          status: "Bad Request",
+        },
+      });
+      return;
     }
+    if (typeof req.body.other !== "string" || req.body.other.length > 10000) {
+      render(req, res.status(400), "error", {
+        error: {
+          message: "Invalid other info.",
+          status: "Bad Request",
+        },
+      });
+      return;
+    }
+    db.prepare(
+      "update submissions set code = ?, lang = ?, other = ? where id = ?",
+    ).run(req.body.code, req.body.lang, req.body.other, id);
+    res.redirect(`/submission/${id}`);
+  } else {
+    render(req, res.status(403), "error", {
+      error: {
+        message: "You do not have permission to view this submission.",
+        status: "Forbidden",
+      },
+    });
+  }
 });
 
 app.get("/problem/:id/submit", (req, res) => {
-    if(!req.session.user) {
-        res.redirect("/login");
-        return;
-    }
-    const { id } = req.params;
-    const problem = db.prepare("select * from problems where id = ?").get(id);
-    if(!problem) {
-        render(req, res.status(404), "error", {
-            error: {
-                message: "Problem not found.",
-                status: "Not Found",
-            },
-        });
-        return;
-    }
-    render(req, res, "submit", { title: "Submit", problem });
+  if (!req.session.user) {
+    res.redirect("/login");
+    return;
+  }
+  const { id } = req.params;
+  const problem = db.prepare("select * from problems where id = ?").get(id);
+  if (!problem) {
+    render(req, res.status(404), "error", {
+      error: {
+        message: "Problem not found.",
+        status: "Not Found",
+      },
+    });
+    return;
+  }
+  render(req, res, "submit", { title: "Submit", problem });
 });
 
 app.post("/problem/:id/submit", (req, res) => {
-    if(!req.session.user) {
-        res.redirect("/login");
-        return;
-    }
-    const { id } = req.params;
-    const problem = db.prepare("select * from problems where id = ?").get(id);
-    if(!problem) {
-        render(req, res.status(404), "error", {
-            error: {
-                message: "Problem not found.",
-                status: "Not Found",
-            },
-        });
-        return;
-    }
-    if(typeof req.body.code !== 'string' || req.body.code.length > 1000) {
-        render(req, res.status(400), "error", {
-            error: {
-                message: "Invalid code.",
-                status: "Bad Request",
-            },
-        });
-        return;
-    }
-    db.prepare("insert into submissions (user_id, problem_id, code) values (?, ?, ?)").run(req.session.user.id, id, req.body.code);
-    res.redirect(`/problem/${id}`);
+  if (!req.session.user) {
+    res.redirect("/login");
+    return;
+  }
+  const { id } = req.params;
+  const problem = db.prepare("select * from problems where id = ?").get(id);
+  if (!problem) {
+    render(req, res.status(404), "error", {
+      error: {
+        message: "Problem not found.",
+        status: "Not Found",
+      },
+    });
+    return;
+  }
+  if (typeof req.body.code !== "string" || req.body.code.length > 1000) {
+    render(req, res.status(400), "error", {
+      error: {
+        message: "Invalid code.",
+        status: "Bad Request",
+      },
+    });
+    return;
+  }
+  if (typeof req.body.lang !== "string" || req.body.lang.length > 100) {
+    render(req, res.status(400), "error", {
+      error: {
+        message: "Invalid language.",
+        status: "Bad Request",
+      },
+    });
+    return;
+  }
+  if (typeof req.body.other !== "string" || req.body.other.length > 10000) {
+    render(req, res.status(400), "error", {
+      error: {
+        message: "Invalid other info.",
+        status: "Bad Request",
+      },
+    });
+    return;
+  }
+  db.prepare(
+    "insert into submissions (user_id, problem_id, code, lang, other) values (?, ?, ?, ?, ?)",
+  ).run(
+    req.session.user.id,
+    id,
+    req.body.code,
+    req.body.lang,
+    req.body.other || "",
+  );
+  res.redirect(`/problem/${id}`);
 });
 
-
-
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-})
+  console.log(`Server listening on port ${PORT}`);
+});

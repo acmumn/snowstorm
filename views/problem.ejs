@@ -1,6 +1,6 @@
 <main>
     <h1><%= problem.title %></h1>
-    <%- problem.description %>
+    <%- problem.description_rendered %>
     <% if (user.admin) { %>
         <a href="/problem/<%= problem.id %>/edit">Edit problem</a>
     <% } %>

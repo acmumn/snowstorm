@@ -61,6 +61,25 @@ body {
 textarea {
     font-family: 'Fira Code', monospace;
 }
+
+input {
+  border: 1px solid black;
+    padding: 0.5rem;
+    font: inherit;
+}
+
+button {
+  border: 1px solid black;
+    padding: 0.5rem;
+    font: inherit;
+    background: none;
+    margin-top: 1rem;
+}
+
+label {
+  margin-top: 1rem;
+  font-weight: bold;
+}
   
 .inline-user {
     display: inline-flex;

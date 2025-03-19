@@ -31,7 +31,8 @@ drop table if exists problems;
 create table problems (
     id integer primary key,
     title text not null,
-    description text not null
+    description_raw text not null,
+    description_rendered text not null
 );
 
 drop table if exists submissions;
@@ -40,6 +41,8 @@ create table submissions (
     user_id integer not null,
     problem_id integer not null,
     code text not null,
+    lang text not null,
+    other text not null,
     created_at integer not null default (unixepoch()),
 
     foreign key(user_id) references users(id) on delete cascade,
