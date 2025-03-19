@@ -4,7 +4,16 @@
         <label for="name">Name</label>
         <input type="text" name="title" id="title">
         <label for="description">Description</label>
-        <textarea name="description" id="description"></textarea>
+        <div class="grow-wrap">
+            <textarea name="description" id="description" oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+        </div>
         <button type="submit">Make</button>
     </form>
 </main>
+
+<script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        const textarea = document.querySelector('textarea');
+        textarea.parentNode.dataset.replicatedValue = textarea.value;
+    });
+</script>
