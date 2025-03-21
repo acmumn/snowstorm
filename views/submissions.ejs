@@ -4,12 +4,15 @@
         <tr>
             <th>User</th>
             <th>Submission</th>
+            <th>Size in bytes</th>
         </tr>
         <% submissions.forEach(submission => { %>
             <tr>
                 <td><%= submission.user %></td>
                 <td><a href="/submission/<%= submission.id %>">View</a></td>
+                <td><%= new Blob([submission.code.replaceAll("\r\n","\n").trim()]).size %>b</td>
             </tr>
         <% }) %>
     </table>
+    <p>Note that byte size <i>may</i> be inaccurate, especially for esoteric uses of whitespace.</p>
 </main>
