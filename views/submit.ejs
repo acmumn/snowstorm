@@ -1,6 +1,9 @@
 <main>
     <h1>Submit to <%= problem.title %></h1>
     <p>You can use any language found on <a href="https://riju.codes/">riju.codes</a>. Please note which language you used in your submission.</p>
+    <p>Your submission can take input in any manner you'd like: as a function call, on standard input, in the command-line arguments, etc ...</p>
+    <p>You cannot, however, change the input format.</p>
+    <p>(In general, you should follow the input/output rules from <a href="https://codegolf.meta.stackexchange.com/questions/2447/default-for-code-golf-input-output-methods">the code golf stack exchange</a>).</p>
     <form action="/problem/<%= problem.id %>/submit" method="post">
         <label for="lang">Language</label>
         <input type="text" name="lang" id="lang">
